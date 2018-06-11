@@ -18,7 +18,7 @@ class Windows(object):
         """
         return a window for special type
         """
-        return self.data[column].rolling(self.window, win_type=window_type)
+        return self.data[column].rolling(self.window, win_type=window_type).mean()
 
     def moving_average(self, column):
         """
