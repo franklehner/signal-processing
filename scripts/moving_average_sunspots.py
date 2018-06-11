@@ -6,21 +6,42 @@ Moving average for sunspots
 """
 
 
+import argparse as _argparse
 import matplotlib.pyplot as _plt
 import statsmodels.api as _sm
 
 from libs.windows import Windows as _Windows
 
 
+def get_options():
+    """
+    Parse options and transfer them to the Script class
+
+    return:
+    =======
+        options
+    """
+    parser = _argparse.ArgumentParser(description="Options for sunspots")
+    parser.add_argument(
+        "-w",
+        "--window",
+        type=int,
+        default=11,
+        help="Window size for rolling data"
+    )
+    return parser.parse_args()
+
+
 class Script(object):
     """
     Main class for script
     """
-    def __init__(self, window):
+    def __init__(self):
         """
         Constructor
         """
-        self.window = window
+        self.options = get_options()
+        self.window = self.options.window
         self.sunspots = self.load_data()
 
     @classmethod
@@ -66,5 +87,4 @@ class Script(object):
 
 
 if __name__ == "__main__":
-    Script(11).run()
-    Script(22).run()
+    Script().run()
