@@ -7,8 +7,8 @@ Moving average for sunspots
 
 
 import argparse as _argparse
+import pandas as _pd
 import matplotlib.pyplot as _plt
-import statsmodels.api as _sm
 
 from libs.windows import Windows as _Windows
 
@@ -49,7 +49,7 @@ class Script(object):
         """
         Load the sunspots data from statsmodels
         """
-        return _sm.datasets.sunspots.load_pandas().data
+        return _pd.read_csv("data/sunspots.csv")
 
     def run(self):
         """

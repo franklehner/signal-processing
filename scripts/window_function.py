@@ -7,8 +7,8 @@ Show different window functions
 
 
 import argparse as _argparse
+import pandas as _pd
 import matplotlib.pyplot as _plt
-import statsmodels.api as _sm
 
 from libs.windows import Windows as _Window
 
@@ -78,8 +78,8 @@ class Script(object):
         Runner method
         """
         sunspots = self.load_data()
-        sunspots.set_index("YEAR", inplace=True)
-        sunspots = sunspots.tail(150)
+        sunspots.set_index("YEAR", inplace=True) #pylint: disable=no-member
+        sunspots = sunspots.tail(150) #pylint: disable=no-member
         sunspots_plot = sunspots.plot()
         window_data = self.get_window(sunspots, column=sunspots.columns[0])
         self.plot_window(sunspots, window_data, sunspots_plot)
@@ -89,7 +89,7 @@ class Script(object):
         """
         Load sunspots data
         """
-        return _sm.datasets.sunspots.load_pandas().data
+        return _pd.read_csv("data/sunspots.csv")
 
     def get_window(self, data, column):
         """
