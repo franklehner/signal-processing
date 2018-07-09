@@ -2,6 +2,7 @@
 Test for cointegration lib
 """
 # pylint: disable=invalid-name
+# pylint: disable=no-member
 
 
 import numpy as _np
