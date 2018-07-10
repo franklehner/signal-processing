@@ -68,7 +68,7 @@ class Script(object):
         """
         Plot the data as Autocorrelation
         """
-        _pd.tools.plotting.autocorrelation_plot(data[column])
+        _pd.plotting.autocorrelation_plot(data[column])
         _plt.tight_layout()
         _plt.show()
 
