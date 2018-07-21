@@ -53,6 +53,9 @@ class Script(object):
     def fourier_transform(cls, data):
         """
         Return fourier transformed data
+
+        Params:
+            data
         """
         return _np.abs(_sc_fftpack.fftshift(_sc_fftpack.rfft(data)))
 
