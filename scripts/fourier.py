@@ -3,78 +3,54 @@
 """
 Fourier transformation of the sunspot signals
 """
+import click
+import pandas as pd
+import numpy as np
+import scipy.fftpack as sc_fftpack
+import matplotlib.pyplot as plt
 
 
-import pandas as _pd
-import numpy as _np
-import scipy.fftpack as _sc_fftpack
-import matplotlib.pyplot as _plt
-
-
-class Script(object):
+@click.command()
+def cli():
+    """Client
     """
-    Main class for this Script
+    sunspots = get_data()
+    x_base = np.linspace(-2 * np.pi, 2 * np.pi, sunspots.size)
+    mid = np.ptp(sunspots) / 2
+    sine = mid + mid * np.sin(np.sin(x_base))
+    sine_fft = fourier_transform(data=sine)
+    max_sine = np.argsort(sine_fft)[-5:]
+    print(f"Index of max sine FFT {max_sine}")
+
+    transformed = fourier_transform(data=sunspots)
+    plot(data=sunspots, show=False, label="Sunspots")
+    plot(data=sine, show=True, lw=2, label="Sine")
+    plot(data=transformed, show=True, label="Transformed")
+    plot(data=sine_fft, show=True, label="Transformed")
+
+
+def get_data() -> np.ndarray:
     """
+    Get Sunspot-data from file
+    """
+    return pd.read_csv("data/sunspots.csv")["SUNACTIVITY"].values
 
-    def __init__(self):
-        """
-        Constructor
-        """
-        self.sunspots = self.get_data()
+def fourier_transform(data: np.ndarray) -> np.ndarray:
+    """
+    Return fourier transformed data
+    """
+    return np.abs(sc_fftpack.fftshift(sc_fftpack.rfft(data)))
 
-    def run(self):
-        """
-        Runner method for this script
-        """
-        x_base = _np.linspace(-2 * _np.pi, 2 * _np.pi, self.sunspots.size)
-        mid = _np.ptp(self.sunspots) / 2
-        sine = mid + mid * _np.sin(_np.sin(x_base))
-        sine_fft = self.fourier_transform(sine)
-        print "Index of max sine FFT", _np.argsort(sine_fft)[-5:]
-
-        transformed = self.fourier_transform(self.sunspots)
-        print "Indices of max sunspots FFT", _np.argsort(transformed)[-5:]
-
-        self.plot(self.sunspots, show=False, label="Sunspots")
-        self.plot(sine, show=True, lw=2, label="Sine")
-
-        self.plot(transformed, show=True, label="Transformed Sunspot")
-
-        self.plot(sine_fft, show=True, label="Transformed Sine", lw=2)
-
-    @classmethod
-    def get_data(cls):
-        """
-        Get Sunspot-data from file
-        """
-        return _pd.read_csv("data/sunspots.csv")["SUNACTIVITY"].values
-
-    @classmethod
-    def fourier_transform(cls, data):
-        """
-        Return fourier transformed data
-        """
-        return _np.abs(_sc_fftpack.fftshift(_sc_fftpack.rfft(data)))
-
-    @classmethod
-    def plot(cls, data, show=True, **kwargs):
-        """
-        Plot data
-        """
-        _plt.plot(data, **kwargs)
-        if show:
-            _plt.grid(True)
-            _plt.legend()
-            _plt.show()
-
-
-    def __call__(self):
-        """
-        Start run method
-        """
-        self.run()
+def plot(data: np.ndarray, show: bool = True, **kwargs):
+    """
+    Plot data
+    """
+    plt.plot(data, **kwargs)
+    if show:
+        plt.grid(True)
+        plt.legend()
+        plt.show()
 
 
 if __name__ == "__main__":
-    FOURIER_TRANSFORMATION = Script()
-    FOURIER_TRANSFORMATION()
+    cli()  # pylint: disable=no-value-for-parameter

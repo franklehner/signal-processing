@@ -2,31 +2,29 @@
 Cointegration test
 ==================
 """
+import dataclasses
+import statsmodels
+import statsmodels.tsa.stattools as ts
+import numpy as np
 
 
-import statsmodels.tsa.stattools as _ts
-
-
-class Cointegration(object):
+@dataclasses.dataclass
+class Cointegration:
     """
     Class Cointegration
     """
-    def __init__(self, vector1, vector2):
-        """
-        Constructor
-        """
-        self.vector1 = vector1
-        self.vector2 = vector2
+    vector1: np.ndarray
+    vector2: np.ndarray
 
-    def get_least_squares(self):
+    def get_least_squares(self) -> statsmodels.regression.linear_model.RegressionResultsWrapper:
         """
         OLS
         """
-        return _ts.OLS(self.vector1, self.vector2).fit()
+        return ts.OLS(self.vector1, self.vector2).fit()
 
     @classmethod
     def calc_adf(cls, resid):
         """
         Calculate Dickey-Fuller test
         """
-        return _ts.adfuller(resid)
+        return ts.adfuller(resid)

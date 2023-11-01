@@ -1,90 +1,69 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# pylint: disable=unsubscriptable-object
 """
 Moving average for sunspots
 """
+import click
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from libs.windows import Windows
 
 
-import argparse as _argparse
-import pandas as _pd
-import matplotlib.pyplot as _plt
-
-from libs.windows import Windows as _Windows
-
-
-def get_options():
+@click.command()
+@click.option(
+    "-w",
+    "--window",
+    type=int,
+    default=11,
+    help="Window size for rolling data",
+)
+def cli(window: int):
+    """Client
     """
-    Parse options and transfer them to the Script class
-
-    return:
-    =======
-        options
-    """
-    parser = _argparse.ArgumentParser(description="Options for sunspots")
-    parser.add_argument(
-        "-w",
-        "--window",
-        type=int,
-        default=11,
-        help="Window size for rolling data"
+    sunspots = load_data()
+    year_range = sunspots["Year"].values
+    sun_activity = get_moving_average(sunspots=sunspots, wd=window)
+    plot(
+        sunspots=sunspots,
+        window=window,
+        year_range=year_range,
+        sunactivity=sun_activity,
     )
-    return parser.parse_args()
 
 
-class Script(object):
+def load_data() -> pd.DataFrame:
     """
-    Main class for script
+    Load the sunspots data from statsmodels
     """
-    def __init__(self):
-        """
-        Constructor
-        """
-        self.options = get_options()
-        self.window = self.options.window
-        self.sunspots = self.load_data()
+    return pd.read_csv("data/sunspots.csv")
 
-    @classmethod
-    def load_data(cls):
-        """
-        Load the sunspots data from statsmodels
-        """
-        return _pd.read_csv("data/sunspots.csv")
+def get_moving_average(sunspots: pd.DataFrame, wd: int, column: str = "SUNACTIVITY") -> pd.Series:
+    """
+    Get the moving average
+    """
+    window = Windows(sunspots, wd)
 
-    def run(self):
-        """
-        Runner method for the script
-        """
-        year_range = self.sunspots["YEAR"].values
-        sunactivity = self.get_moving_average()
-        self.plot(year_range, sunactivity)
+    return window.moving_average(column=column)
 
-    def get_moving_average(self, column="SUNACTIVITY"):
-        """
-        Get the moving average
-        """
-        window = _Windows(self.sunspots, self.window)
-        return window.moving_average(column)
+def plot(sunspots: pd.DataFrame, window: int, year_range: np.ndarray, sunactivity):
+    """
+    Plot the moving average
+    """
+    plt.plot(
+        year_range,
+        sunspots["SUNACTIVITY"].values,
+        label="Original"
+    )
 
-    def plot(self, year_range, sunactivity):
-        """
-        Plot the moving average
-        """
-        _plt.plot(
-            year_range,
-            self.sunspots["SUNACTIVITY"].values,
-            label="Original"
-        )
-
-        _plt.plot(
-            year_range,
-            sunactivity.values,
-            label="SMA %s" % self.window
-        )
-
-        _plt.legend()
-        _plt.show()
+    plt.plot(
+        year_range,
+        sunactivity.values,
+        label=f"SMA {window}",
+    )
+    plt.legend()
+    plt.show()
 
 
 if __name__ == "__main__":
-    Script().run()
+    cli()  # pylint: disable=no-value-for-parameter

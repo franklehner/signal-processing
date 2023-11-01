@@ -13,10 +13,17 @@ setup(
     author_email="frank.lehner@unity-mail.de",
     packages=find_packages(),
     install_requires=[
+        "click",
         "numpy",
         "scipy",
         "pandas",
         "statsmodels",
         "matplotlib",
-    ]
+    ],
+    test_requires=[
+        "pytest",
+        "pudb",
+        "mypy",
+        "pytest-pudb",
+    ],
 )
